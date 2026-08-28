@@ -1,0 +1,14 @@
+model AuditLog {
+  id         String   @id @default(uuid())
+  customerId String
+  action     String
+  entityType String
+  entityId   String
+  createdAt  DateTime @default(now())
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([customerId])
+  @@index([entityType, entityId])
+  @@map("audit_logs")
+}

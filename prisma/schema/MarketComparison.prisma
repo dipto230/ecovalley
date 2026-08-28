@@ -1,0 +1,16 @@
+model MarketComparison {
+  id           String   @id @default(uuid())
+
+  productId    String
+
+  platformName String
+  productUrl   String
+  marketPrice  Decimal @db.Decimal(10,2)
+
+  createdAt    DateTime @default(now())
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+  @@map("market_comparisons")
+}

@@ -1,0 +1,51 @@
+enum Role {
+    
+ CUSTOMER
+    ADMIN
+    SUPER_ADMIN
+    VENDOR
+}
+
+enum UserStatus {
+    BLOCKED
+    DELETED
+    ACTIVE
+}
+
+enum VendorStatus {
+  PENDING
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+
+enum ProductCondition {
+  NEW
+  USED
+  REFURBISHED
+}
+
+enum ProductStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  SOLD
+  AVAILABLE
+}
+
+enum OfferStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  CANCELLED
+}
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  COMPLETED
+}

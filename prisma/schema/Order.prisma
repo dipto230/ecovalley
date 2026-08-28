@@ -1,0 +1,31 @@
+model Order {
+  id String @id @default(uuid())
+
+  offerId String @unique
+  customerId String
+  vendorId String
+
+  finalPrice Decimal @db.Decimal(10, 2)
+  status OrderStatus @default(PENDING)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+
+  offer Offer @relation("OfferOrder", fields: [offerId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  customer Customer @relation("CustomerOrders", fields: [customerId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  vendor Vendors @relation("VendorOrders", fields: [vendorId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  invoice Invoice?
+   payments Payment[]
+    reviews  Review[] 
+
+  @@index([customerId], name: "idx_order_customer")
+  @@index([vendorId], name: "idx_order_vendor")
+  @@index([status], name: "idx_order_status")
+  @@index([createdAt], name: "idx_order_created_at")
+
+  @@map("orders")
+}

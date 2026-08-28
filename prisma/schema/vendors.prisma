@@ -1,0 +1,49 @@
+model Vendors {
+  id                     String    @id @default(uuid())
+  name                   String
+  email                  String    @unique
+  profilePhoto           String?
+  contactNumber          String?
+  alternateContactNumber String?
+  address                String?
+  city                   String?
+  state                  String?
+  postalCode             String?
+  country                String?
+
+  companyName            String    @unique
+  tradeLicenseNumber     String    @unique
+  nidNumber              String    @unique
+  tinNumber              String?   @unique 
+  vatRegistrationNumber  String?   @unique
+
+  website                String?
+  businessType           String?   
+  status                 VendorStatus @default(PENDING)
+
+  bankName               String?
+  bankAccountNumber      String?
+  bankBranch             String?
+  mobileBankingNumber    String?
+
+  notes                  String?
+  products Product[]
+  offers Offer[]
+    categories VendorsCategory[]
+    reviews Review[]
+    
+orders Order[] @relation("VendorOrders")
+
+  isDeleted              Boolean   @default(false)
+  deletedAt              DateTime?
+
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+
+  userId String @unique
+  user User @relation(fields:[userId], references:[id], onDelete: Cascade, onUpdate: Cascade)
+  @@index([email], name: "idx_vendor_email")
+  @@index([companyName], name: "idx_vendor_company_name")
+  @@index([isDeleted], name: "idx_vendor_is_deleted")
+  @@map("vendors")
+}

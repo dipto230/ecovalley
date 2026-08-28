@@ -1,0 +1,25 @@
+model Offer {
+  id          String   @id @default(uuid())
+
+  productId   String
+  vendorId    String
+
+  offerPrice  Decimal  @db.Decimal(10,2)
+  message     String?
+
+  status      OfferStatus @default(PENDING)
+
+  expiresAt   DateTime?
+  order Order? @relation("OfferOrder")
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  vendor  Vendors @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+  @@index([vendorId])
+
+  @@map("offers")
+}

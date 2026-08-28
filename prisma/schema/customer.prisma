@@ -1,0 +1,29 @@
+model Customer  {
+  id           String      @id @default(uuid())
+  name         String
+  email        String      @unique
+  
+  phone        String?
+  address      String?
+  profilePhoto String?
+
+  role         Role        @default(CUSTOMER)
+  status       UserStatus  @default(ACTIVE)
+  isDeleted    Boolean     @default(false)
+  deletedAt    DateTime?
+
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  orders Order[] @relation("CustomerOrders")
+  reviews       Review[]      @relation("CustomerReviews")
+ 
+  auditLogs AuditLog[]
+  notifications Notification[]
+
+  userId       String      @unique
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([email], name:"idx_customer_email")
+  @@index([isDeleted], name:"idx_customer_isDeleted")
+  @@map("customer")
+}

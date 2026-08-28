@@ -1,0 +1,25 @@
+model Category {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String   @db.VarChar(255)
+  icon             String?
+  description String?
+   products Product[]
+    vendorCategories VendorsCategory[]
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("categories")
+}
+
+
+
+model VendorsCategory {
+  id String @id @default(uuid(7))
+  vendorId String
+  categoryId String @db.Uuid
+  vendors Vendors @relation(fields:[vendorId], references:[id], onDelete: Cascade, onUpdate:Cascade)
+  category Category @relation(fields:[categoryId], references:[id], onDelete:Cascade, onUpdate:Cascade)
+  @@unique([vendorId, categoryId])
+  @@index([vendorId], name: "idx_vendor_category_vendor_id")
+  @@index([categoryId], name: "idx_vendor_category_category_id")
+  @@map("vendors_categories")
+}

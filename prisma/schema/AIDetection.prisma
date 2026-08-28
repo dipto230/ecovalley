@@ -1,0 +1,21 @@
+model AIDetection {
+  id               String   @id @default(uuid())
+
+  productId        String
+
+  detectedCategory String?
+  detectedBrand    String?
+  detectedModel    String?
+
+  condition        ProductCondition?
+
+  confidenceScore  Float
+
+  aiModel          String
+  createdAt        DateTime @default(now())
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+  @@map("ai_detections")
+}
