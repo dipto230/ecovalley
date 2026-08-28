@@ -1,13 +1,33 @@
-model Notification {
-  id         String   @id @default(uuid())
-  customerId String
-  title      String
-  message    String
-  isRead     Boolean  @default(false)
-  createdAt  DateTime @default(now())
 
-  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+model Notification {
+  id          String               @id @default(uuid())
+  customerId  String
+  type        NotificationType     @default(SYSTEM)
+  priority    NotificationPriority @default(NORMAL)
+
+  title       String
+  message     String
+
+  isRead      Boolean              @default(false)
+  readAt      DateTime?
+
+  actionUrl   String?
+  actionLabel String?
+
+  metadata    Json?
+  expiresAt   DateTime?
+
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+
+  customer    Customer             @relation(fields: [customerId], references: [id], onDelete: Cascade)
 
   @@index([customerId])
+  @@index([customerId, isRead])
+  @@index([customerId, createdAt])
+  @@index([type])
+  @@index([expiresAt])
+
   @@map("notifications")
 }

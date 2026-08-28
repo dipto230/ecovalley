@@ -49,3 +49,20 @@ enum OrderStatus {
   CANCELLED
   COMPLETED
 }
+
+enum NotificationType {
+  ORDER
+  PAYMENT
+  PRODUCT
+  PRICE_ALERT
+  SYSTEM
+  PROMOTION
+  SECURITY
+}
+
+enum NotificationPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
