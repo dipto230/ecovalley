@@ -12,6 +12,7 @@ import {
   IPriceSource,
 } from "./price-estimation.interface";
 import { searchGoogleShopping } from "./adapters/google-shopping.adapter";
+import { MarketComparisonService } from "../market-comparison/market-comparison.service";
 
 
 
@@ -276,6 +277,12 @@ const estimateProductPrice = async (
     cleanPrices(
       allSources
     );
+  
+  await MarketComparisonService
+  .createManyMarketComparisons(
+    productId,
+    validSources
+  );
 
 
   
