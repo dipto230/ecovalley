@@ -17,9 +17,7 @@ import { checkAuth } from "../../middleware/checkAuth";
 const router = Router();
 
 
-/**
- * Vendor creates offer
- */
+
 router.post(
   "/",
 
@@ -31,9 +29,7 @@ router.post(
 );
 
 
-/**
- * Vendor's own offers
- */
+
 router.get(
   "/my-offers",
 
@@ -43,9 +39,7 @@ router.get(
 );
 
 
-/**
- * Admin - all offers
- */
+
 router.get(
   "/",
 
@@ -55,9 +49,7 @@ router.get(
 );
 
 
-/**
- * Single offer
- */
+
 router.get(
   "/:id",
 
@@ -73,9 +65,7 @@ router.get(
 );
 
 
-/**
- * Update offer
- */
+
 router.patch(
   "/:id",
 
@@ -87,9 +77,7 @@ router.patch(
 );
 
 
-/**
- * Update offer status
- */
+
 router.patch(
   "/:id/status",
 
@@ -104,9 +92,7 @@ router.patch(
 );
 
 
-/**
- * Cancel offer
- */
+
 router.patch(
   "/:id/cancel",
 

@@ -9,6 +9,7 @@ import { MarketComparisonRoutes } from "../module/market-comparison/market-compa
 import { OrderRoutes } from "../module/order/order.route";
 import { OfferRoutes } from "../module/offer/offer.route";
 import { AdminRoutes } from "../module/admin/admin.route";
+import { PaymentRoutes } from "../module/payment/payment.route";
 
 
 const router = Router()
@@ -23,5 +24,6 @@ router.use("/price-estimation", PriceEstimationRoutes);
 router.use("/market-comparisons", MarketComparisonRoutes)
 router.use("/orders", OrderRoutes)
 router.use("/offers", OfferRoutes)
+router.use("/payments", PaymentRoutes);
 
 export const IndexRoutes = router

@@ -24,9 +24,17 @@ app.use(cors({
 app.use("/api/auth", toNodeHandler(auth))
 
 app.use(express.urlencoded({ extended: true }));
+
+// app.use(express.urlencoded({ extended: true }));
+
+app.use(
+  "/api/v1/payments/webhook",
+  express.raw({
+    type: "application/json",
+  })
+);
 app.use(express.json());
 app.use(cookieParser());
-app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/v1", IndexRoutes)
 
