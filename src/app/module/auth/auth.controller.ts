@@ -35,6 +35,24 @@ const registerUser = catchAsync(
     }
 )
 
+//for super-admin
+const createSuperAdmin = catchAsync(
+    async (req: Request, res: Response) => {
+
+        const payload = req.body;
+
+        const result =
+            await AuthService.createSuperAdmin(payload);
+
+        sendResponse(res, {
+            httpStatusCode: status.CREATED,
+            success: true,
+            message: "Super Admin created successfully",
+            data: result,
+        });
+    }
+);
+
 const loginUser = catchAsync(
     async (req: Request, res: Response) => {
         const payload = req.body;
@@ -258,7 +276,8 @@ export const AuthController = {
     resetPassword,
     googleLogin,
     googleLoginSuccess,
-    handleOAuthError
+    handleOAuthError,
+    createSuperAdmin
 
 
 }

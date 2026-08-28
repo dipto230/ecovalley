@@ -2,8 +2,15 @@ import { Router } from "express";
 import { AuthController } from "./auth.controller";
 import { checkAuth } from "../../middleware/checkAuth";
 import { Role } from "../../../generated/prisma/enums";
+import { validateRequest } from "../../middleware/validationRequest";
+import { createSuperAdminZodSchema } from "./auth.validation";
 const router = Router();
 router.post("/register", AuthController.registerUser)
+router.post(
+    "/create-super-admin",
+    validateRequest(createSuperAdminZodSchema),
+    AuthController.createSuperAdmin
+);
 router.post("/login", AuthController.loginUser)
 router.get("/me", checkAuth(Role.ADMIN, Role.CUSTOMER, Role.VENDOR, Role.SUPER_ADMIN), AuthController.getMe)
 router.post("/refresh-token", AuthController.getNewToken)

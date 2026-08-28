@@ -4,6 +4,22 @@ import { catchAsync } from "../../shared/catchAsync";
 import { sendResponse } from "../../shared/sendResponse";
 import { AdminService } from "./admin.service";
 
+const createAdmin = catchAsync(
+    async (req: Request, res: Response) => {
+
+        const payload = req.body;
+
+        const result =
+            await AdminService.createAdmin(payload);
+
+        sendResponse(res, {
+            httpStatusCode: status.CREATED,
+            success: true,
+            message: "Admin created successfully",
+            data: result,
+        });
+    }
+);
 
 const getAllAdmins = catchAsync(
     async (req: Request, res: Response) => {
@@ -71,4 +87,5 @@ export const AdminController = {
     updateAdmin,
     deleteAdmin,
     getAdminById,
+    createAdmin
 };

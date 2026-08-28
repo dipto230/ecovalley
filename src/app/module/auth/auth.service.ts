@@ -8,7 +8,7 @@ import { IRequestUser } from "../../interfaces/requestUser.interface";
 import { jwtUtils } from "../../utils/jwt";
 import { envVars } from "../../../config/env";
 import { JwtPayload } from "jsonwebtoken";
-import { IChangePasswordPayload } from "./auth.interface";
+import { IChangePasswordPayload, ICreateSuperAdminPayload } from "./auth.interface";
 import { catchAsync } from "../../shared/catchAsync";
 import { Request, Response } from "express";
 
@@ -86,6 +86,88 @@ const registerUser = async (payload: IRegisterUserPayload) => {
 
     }
 }
+
+//for super-admin 
+const createSuperAdmin = async (
+    payload: ICreateSuperAdminPayload
+) => {
+
+    const {
+        name,
+        email,
+        password,
+        profilePhoto,
+        contactNumber,
+    } = payload;
+
+    // Check if SUPER_ADMIN already exists
+    const existingSuperAdmin = await prisma.user.findFirst({
+        where: {
+            role: Role.SUPER_ADMIN,
+            isDeleted: false,
+        },
+    });
+
+    if (existingSuperAdmin) {
+        throw new AppError(
+            status.CONFLICT,
+            "Super Admin already exists"
+        );
+    }
+
+    // Create Better Auth user
+    const data = await auth.api.signUpEmail({
+        body: {
+            name,
+            email,
+            password,
+            role: Role.SUPER_ADMIN,
+        },
+    });
+
+    if (!data.user) {
+        throw new AppError(
+            status.INTERNAL_SERVER_ERROR,
+            "Super Admin creation failed"
+        );
+    }
+
+    try {
+
+        const admin = await prisma.$transaction(async (tx) => {
+
+            const createdAdmin = await tx.admin.create({
+                data: {
+                    userId: data.user.id,
+                    name,
+                    email,
+                    profilePhoto,
+                    contactNumber,
+                },
+            });
+
+            return createdAdmin;
+        });
+
+        return {
+            admin,
+            user: data.user,
+        };
+
+    } catch (error) {
+
+        console.log("Super Admin transaction error:", error);
+
+        // Rollback Better Auth user
+        await prisma.user.delete({
+            where: {
+                id: data.user.id,
+            },
+        });
+
+        throw error;
+    }
+};
 
 const loginUser = async (payload: ILoginUserPayload) => {
     const { email, password } = payload;
@@ -447,5 +529,6 @@ export const AuthService = {
     resetPassword,
     googleLoginSuccess,
     googleLogin,
-    handleOAuthError
+    handleOAuthError,
+    createSuperAdmin
 }

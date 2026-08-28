@@ -1,12 +1,115 @@
 import status from "http-status";
-import { UserStatus } from "../../../generated/prisma/enums";
+import { Role, UserStatus } from "../../../generated/prisma/enums";
 import AppError from "../../errorHelpers/AppError";
 import { IRequestUser } from "../../interfaces/requestUser.interface";
 import { prisma } from "../../lib/prisma";
-import { IUpdateAdminPayload } from "./admin.interface";
+import { ICreateAdminPayload, IUpdateAdminPayload } from "./admin.interface";
+import { auth } from "../../lib/auth";
+
+
+const createAdmin = async (
+    payload: ICreateAdminPayload
+) => {
+    const {
+        password,
+        admin,
+    } = payload;
+
+    const {
+        name,
+        email,
+        profilePhoto,
+        contactNumber,
+    } = admin;
+
+    // Check existing user
+    const existingUser = await prisma.user.findUnique({
+        where: {
+            email,
+        },
+    });
+
+    if (existingUser) {
+        throw new AppError(
+            status.CONFLICT,
+            "A user with this email already exists"
+        );
+    }
+
+    // Create user through Better Auth
+    const data = await auth.api.signUpEmail({
+        body: {
+            name,
+            email,
+            password,
+            role: Role.ADMIN,
+        },
+    });
+
+    if (!data.user) {
+        throw new AppError(
+            status.INTERNAL_SERVER_ERROR,
+            "Admin user creation failed"
+        );
+    }
+
+    try {
+        const result = await prisma.$transaction(
+            async (tx) => {
+
+                // Make sure role is ADMIN
+                const createdUser = await tx.user.update({
+                    where: {
+                        id: data.user.id,
+                    },
+                    data: {
+                        role: Role.ADMIN,
+                    },
+                });
+
+                // Create Admin profile
+                const createdAdmin = await tx.admin.create({
+                    data: {
+                        userId: createdUser.id,
+                        name,
+                        email,
+                        profilePhoto,
+                        contactNumber,
+                    },
+                });
+
+                return {
+                    user: createdUser,
+                    admin: createdAdmin,
+                };
+            }
+        );
+
+        return result;
+
+    } catch (error) {
+
+        console.error(
+            "Admin creation transaction error:",
+            error
+        );
+
+        // Rollback Better Auth user
+        await prisma.user.delete({
+            where: {
+                id: data.user.id,
+            },
+        });
+
+        throw error;
+    }
+};
 
 const getAllAdmins = async () => {
     const admins = await prisma.admin.findMany({
+         where: {
+            isDeleted: false,
+        },
         include: {
             user: true,
         }
@@ -112,4 +215,5 @@ export const AdminService = {
     getAdminById,
     updateAdmin,
     deleteAdmin,
+    createAdmin
 }

@@ -1,45 +1,30 @@
 import { z } from "zod";
 
+// Create Order
 export const createOrderSchema = z.object({
-  body: z.object({
-    offerId: z
-      .string()
-      .uuid("Invalid offer ID"),
-  }),
+  offerId: z
+    .string()
+    .uuid("Invalid offer ID"),
 });
 
+
+// Update Order Status
 export const updateOrderStatusSchema = z.object({
-  params: z.object({
-    id: z
-      .string()
-      .uuid("Invalid order ID"),
-  }),
-
-  body: z.object({
-    status: z.enum([
-      "PENDING",
-      "CONFIRMED",
-      "PROCESSING",
-      "SHIPPED",
-      "DELIVERED",
-      "COMPLETED",
-      "CANCELLED",
-    ]),
-  }),
+  status: z.enum([
+    "PENDING",
+    "CONFIRMED",
+    "PROCESSING",
+    "SHIPPED",
+    "DELIVERED",
+    "COMPLETED",
+    "CANCELLED",
+  ]),
 });
 
-export const cancelOrderSchema = z.object({
-  params: z.object({
-    id: z
-      .string()
-      .uuid("Invalid order ID"),
-  }),
-});
 
-export const orderIdSchema = z.object({
-  params: z.object({
-    id: z
-      .string()
-      .uuid("Invalid order ID"),
-  }),
-});
+// Cancel Order
+export const cancelOrderSchema = z.object({});
+
+
+// Order ID
+export const orderIdSchema = z.object({});
