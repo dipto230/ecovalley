@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+
+  <title>Invoice</title>
+</head>
+
+<body
+  style="
+    margin: 0;
+    padding: 0;
+    background-color: #f5f5f5;
+    font-family: Arial, Helvetica, sans-serif;
+  "
+>
+
+  <div
+    style="
+      max-width: 600px;
+      margin: 40px auto;
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 8px;
+    "
+  >
+
+    <h2>
+      Order Confirmed
+    </h2>
+
+    <p>
+      Hello <%= customerName %>,
+    </p>
+
+    <p>
+      Thank you for your purchase.
+      Your payment has been successfully received
+      and your invoice has been generated.
+    </p>
+
+
+    <div
+      style="
+        background: #f7f7f7;
+        padding: 20px;
+        border-radius: 6px;
+        margin: 20px 0;
+      "
+    >
+
+      <p>
+        <strong>Invoice Number:</strong>
+        <%= invoiceNumber %>
+      </p>
+
+      <p>
+        <strong>Order ID:</strong>
+        <%= orderId %>
+      </p>
+
+      <p>
+        <strong>Amount:</strong>
+        $<%= amount %>
+      </p>
+
+      <p>
+        <strong>Payment Status:</strong>
+        <%= paymentStatus %>
+      </p>
+
+    </div>
+
+
+    <p>
+      Your invoice PDF is attached to this email.
+    </p>
+
+
+    <% if (invoiceUrl) { %>
+
+      <p>
+        You can also access your invoice online:
+      </p>
+
+      <p>
+        <a
+          href="<%= invoiceUrl %>"
+          style="
+            display: inline-block;
+            padding: 12px 20px;
+            background: #000000;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 5px;
+          "
+        >
+          View Invoice
+        </a>
+      </p>
+
+    <% } %>
+
+
+    <p style="margin-top: 30px;">
+      Thank you for choosing us.
+    </p>
+
+    <p>
+      Regards,<br />
+      Your Company
+    </p>
+
+  </div>
+
+</body>
+</html>

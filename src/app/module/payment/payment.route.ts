@@ -14,9 +14,7 @@ import { checkAuth } from "../../middleware/checkAuth";
 const router = Router();
 
 
-// =====================================================
-// CREATE CHECKOUT SESSION
-// =====================================================
+
 
 router.post(
   "/create-checkout-session",
@@ -31,9 +29,7 @@ router.post(
 );
 
 
-// =====================================================
-// STRIPE WEBHOOK
-// =====================================================
+
 
 router.post(
   "/webhook",
@@ -42,9 +38,7 @@ router.post(
 );
 
 
-// =====================================================
-// GET ORDER PAYMENTS
-// =====================================================
+
 
 router.get(
   "/order/:orderId",

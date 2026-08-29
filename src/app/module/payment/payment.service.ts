@@ -13,11 +13,10 @@ import { envVars } from "../../../config/env";
 import {
   ICreateCheckoutSession,
 } from "./payment.interface";
+import { InvoiceService } from "../invoice/invoice.service";
 
 
-// =====================================================
-// CREATE CHECKOUT SESSION
-// =====================================================
+
 
 const createCheckoutSession = async (
   userId: string,
@@ -25,9 +24,7 @@ const createCheckoutSession = async (
 ) => {
   const { orderId } = payload;
 
-  // -----------------------------------------
-  // 1. Find customer
-  // -----------------------------------------
+
 
   const customer = await prisma.customer.findUnique({
     where: {
@@ -49,9 +46,7 @@ const createCheckoutSession = async (
     );
   }
 
-  // -----------------------------------------
-  // 2. Find order
-  // -----------------------------------------
+ 
 
   const order = await prisma.order.findUnique({
     where: {
@@ -84,9 +79,7 @@ const createCheckoutSession = async (
     );
   }
 
-  // -----------------------------------------
-  // 3. Check ownership
-  // -----------------------------------------
+ 
 
   if (order.customerId !== customer.id) {
     throw new AppError(
@@ -95,9 +88,7 @@ const createCheckoutSession = async (
     );
   }
 
-  // -----------------------------------------
-  // 4. Check order status
-  // -----------------------------------------
+  
 
   if (order.status !== OrderStatus.PENDING) {
     throw new AppError(
@@ -106,9 +97,7 @@ const createCheckoutSession = async (
     );
   }
 
-  // -----------------------------------------
-  // 5. Check existing payment
-  // -----------------------------------------
+  
 
   const existingPaidPayment =
     order.payments.find(
@@ -123,9 +112,7 @@ const createCheckoutSession = async (
     );
   }
 
-  // -----------------------------------------
-  // 6. Get amount from database
-  // -----------------------------------------
+
 
   const amount = Number(order.finalPrice);
 
@@ -136,16 +123,12 @@ const createCheckoutSession = async (
     );
   }
 
-  // Stripe uses smallest currency unit
-  // Example:
-  // $100.50 = 10050 cents
+  
 
   const stripeAmount =
     Math.round(amount * 100);
 
-  // -----------------------------------------
-  // 7. Create Stripe Checkout Session
-  // -----------------------------------------
+  
 
   const session =
     await stripe.checkout.sessions.create({
@@ -188,9 +171,7 @@ const createCheckoutSession = async (
         `${envVars.FRONTEND_URL}/payment/cancel?order_id=${order.id}`,
     });
 
-  // -----------------------------------------
-  // 8. Create Payment record
-  // -----------------------------------------
+  
 
   await prisma.payment.create({
     data: {
@@ -220,9 +201,7 @@ const createCheckoutSession = async (
 };
 
 
-// =====================================================
-// STRIPE WEBHOOK
-// =====================================================
+
 
 const handleStripeWebhook = async (
   rawBody: Buffer,
@@ -249,9 +228,7 @@ const handleStripeWebhook = async (
     );
   }
 
-  // -----------------------------------------
-  // Checkout completed
-  // -----------------------------------------
+ 
 
   if (
     event.type ===
@@ -271,15 +248,12 @@ const handleStripeWebhook = async (
 };
 
 
-// =====================================================
-// CHECKOUT COMPLETED
-// =====================================================
+
 
 const handleCheckoutCompleted = async (
   session: Stripe.Checkout.Session
 ) => {
-  const orderId =
-    session.metadata?.orderId;
+  const orderId = session.metadata?.orderId;
 
   if (!orderId) {
     console.error(
@@ -289,123 +263,145 @@ const handleCheckoutCompleted = async (
     return;
   }
 
-  // Make sure Stripe confirms payment
-  if (
-    session.payment_status !== "paid"
-  ) {
+  if (session.payment_status !== "paid") {
     return;
   }
 
   const paymentIntentId =
-    typeof session.payment_intent ===
-    "string"
+    typeof session.payment_intent === "string"
       ? session.payment_intent
       : session.payment_intent?.id;
 
-  await prisma.$transaction(
-    async (tx) => {
+  
+ await prisma.$transaction(
+  async (tx) => {
+    const payment = await tx.payment.findFirst({
+      where: {
+        orderId,
+        paymentMethod: "STRIPE",
+        status: "PENDING",
+      },
 
-      // -----------------------------------------
-      // Find pending payment for order
-      // -----------------------------------------
+      orderBy: {
+        paidAt: "desc",
+      },
+    });
 
-      const payment =
+    if (!payment) {
+      const alreadyPaid =
         await tx.payment.findFirst({
           where: {
             orderId,
-
             paymentMethod: "STRIPE",
-
-            status: "PENDING",
-          },
-
-          orderBy: {
-            paidAt: "desc",
+            status: "PAID",
           },
         });
 
-      if (!payment) {
-        console.error(
-          "Pending payment not found",
-          {
-            orderId,
-            sessionId: session.id,
-          }
-        );
-
+      if (alreadyPaid) {
         return;
       }
 
-      // -----------------------------------------
-      // Idempotency
-      // -----------------------------------------
+      console.error(
+        "Pending payment not found",
+        {
+          orderId,
+          sessionId: session.id,
+        }
+      );
 
-      if (payment.status === "PAID") {
-        return;
-      }
+      return;
+    }
 
-      // -----------------------------------------
-      // Update payment
-      // -----------------------------------------
+    await tx.payment.update({
+      where: {
+        id: payment.id,
+      },
 
-      await tx.payment.update({
+      data: {
+        status: "PAID",
+
+        transactionId:
+          paymentIntentId ?? null,
+
+        paidAt: new Date(),
+      },
+    });
+
+    const order =
+      await tx.order.findUnique({
         where: {
-          id: payment.id,
-        },
-
-        data: {
-          status: "PAID",
-
-          transactionId:
-            paymentIntentId ?? null,
-
-          paidAt: new Date(),
+          id: orderId,
         },
       });
 
-      // -----------------------------------------
-      // Update order
-      // -----------------------------------------
-
-      const order =
-        await tx.order.findUnique({
-          where: {
-            id: orderId,
-          },
-        });
-
-      if (!order) {
-        throw new AppError(
-          status.NOT_FOUND,
-          "Order not found"
-        );
-      }
-
-      // Only PENDING → CONFIRMED
-
-      if (
-        order.status ===
-        OrderStatus.PENDING
-      ) {
-        await tx.order.update({
-          where: {
-            id: orderId,
-          },
-
-          data: {
-            status:
-              OrderStatus.CONFIRMED,
-          },
-        });
-      }
+    if (!order) {
+      throw new AppError(
+        status.NOT_FOUND,
+        "Order not found"
+      );
     }
-  );
+
+    if (
+      order.status === OrderStatus.PENDING
+    ) {
+      await tx.order.update({
+        where: {
+          id: orderId,
+        },
+
+        data: {
+          status: OrderStatus.CONFIRMED,
+        },
+      });
+    }
+  },
+  {
+    maxWait: 10000,
+    timeout: 20000,
+  }
+);
+
+  /*
+   * =====================================
+   * GENERATE INVOICE
+   * =====================================
+   *
+   * Keep this OUTSIDE the Prisma
+   * transaction because it performs:
+   *
+   * 1. PDF generation
+   * 2. Cloudinary upload
+   * 3. Database invoice creation
+   * 4. Email sending
+   */
+
+  try {
+    const invoice =
+      await InvoiceService.generateInvoice(
+        orderId
+      );
+
+    console.log(
+      `Invoice generated successfully: ${invoice.invoiceNumber}`
+    );
+
+  } catch (error) {
+    /*
+     * Payment is already successful.
+     *
+     * Don't fail the payment because
+     * invoice/email generation failed.
+     */
+
+    console.error(
+      `Invoice generation failed for order ${orderId}:`,
+      error
+    );
+  }
 };
 
 
-// =====================================================
-// GET ORDER PAYMENTS
-// =====================================================
+
 
 const getPaymentsByOrder = async (
   userId: string,
@@ -460,7 +456,6 @@ const getPaymentsByOrder = async (
 };
 
 
-// =====================================================
 
 export const PaymentService = {
   createCheckoutSession,
