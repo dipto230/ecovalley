@@ -10,12 +10,7 @@ import {
 } from "./auditLog.interface";
 
 
-/**
- * Create Audit Log
- *
- * customerId is NOT accepted from client.
- * It is resolved from authenticated user's userId.
- */
+
 const createAuditLog = async (
     userId: string,
     payload: ICreateAuditLog
@@ -58,9 +53,7 @@ const createAuditLog = async (
 };
 
 
-/**
- * Get all Audit Logs
- */
+
 const getAllAuditLogs = async (
     query: IAuditLogQuery,
     userId: string,
@@ -81,10 +74,7 @@ const getAllAuditLogs = async (
 
     const where: any = {};
 
-    /**
-     * Normal customer can only see
-     * his own audit logs.
-     */
+   
     if (!isAdmin) {
 
         const customer = await prisma.customer.findUnique({
@@ -106,9 +96,7 @@ const getAllAuditLogs = async (
         where.customerId = customer.id;
     }
 
-    /**
-     * Admin can filter by customerId.
-     */
+  
     if (isAdmin && query.customerId) {
         where.customerId = query.customerId;
     }
@@ -131,9 +119,7 @@ const getAllAuditLogs = async (
         where.entityId = query.entityId;
     }
 
-    /**
-     * Global search
-     */
+   
     if (query.search) {
         where.OR = [
             {
@@ -197,9 +183,7 @@ const getAllAuditLogs = async (
 };
 
 
-/**
- * Get single Audit Log
- */
+
 const getSingleAuditLog = async (
     id: string,
     userId: string,
@@ -231,10 +215,7 @@ const getSingleAuditLog = async (
         );
     }
 
-    /**
-     * Customer can only access
-     * his own audit log.
-     */
+   
     if (!isAdmin) {
 
         const customer = await prisma.customer.findUnique({
@@ -258,9 +239,7 @@ const getSingleAuditLog = async (
 };
 
 
-/**
- * Get customer's own audit logs
- */
+
 const getMyAuditLogs = async (
     userId: string,
     query: IAuditLogQuery

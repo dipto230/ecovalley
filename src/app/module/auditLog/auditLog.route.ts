@@ -17,11 +17,7 @@ import {
 const router = Router();
 
 
-/**
- * Create Audit Log
- *
- * Customer only
- */
+
 router.post(
     "/",
     checkAuth(Role.CUSTOMER),
@@ -30,11 +26,7 @@ router.post(
 );
 
 
-/**
- * Get all audit logs
- *
- * Admin + Customer
- */
+
 router.get(
     "/",
     checkAuth(Role.ADMIN, Role.CUSTOMER),
@@ -43,9 +35,7 @@ router.get(
 );
 
 
-/**
- * Get current customer's logs
- */
+
 router.get(
     "/my-logs",
     checkAuth(Role.CUSTOMER),
@@ -54,11 +44,7 @@ router.get(
 );
 
 
-/**
- * Get single audit log
- *
- * Admin + Customer
- */
+
 router.get(
     "/:id",
     checkAuth(Role.ADMIN, Role.CUSTOMER),

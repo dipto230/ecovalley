@@ -7,9 +7,7 @@ import { sendResponse } from "../../shared/sendResponse";
 import { AuditLogService } from "./auditLog.service";
 
 
-/**
- * Create Audit Log
- */
+
 const createAuditLog = catchAsync(
     async (req: Request, res: Response) => {
 
@@ -28,12 +26,7 @@ const createAuditLog = catchAsync(
 );
 
 
-/**
- * Get All Audit Logs
- *
- * Admin -> all logs
- * Customer -> own logs
- */
+
 const getAllAuditLogs = catchAsync(
     async (req: Request, res: Response) => {
 
@@ -56,9 +49,7 @@ const getAllAuditLogs = catchAsync(
 );
 
 
-/**
- * Get My Audit Logs
- */
+
 const getMyAuditLogs = catchAsync(
     async (req: Request, res: Response) => {
 
@@ -78,9 +69,7 @@ const getMyAuditLogs = catchAsync(
 );
 
 
-/**
- * Get Single Audit Log
- */
+
 const getSingleAuditLog = catchAsync(
     async (req: Request, res: Response) => {
         const { id } = req.params;
