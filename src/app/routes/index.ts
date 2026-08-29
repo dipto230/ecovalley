@@ -11,6 +11,7 @@ import { OfferRoutes } from "../module/offer/offer.route";
 import { AdminRoutes } from "../module/admin/admin.route";
 import { PaymentRoutes } from "../module/payment/payment.route";
 import { InvoiceRoutes } from "../module/invoice/invoice.route";
+import { AuditLogRoutes } from "../module/auditLog/auditLog.route";
 
 
 const router = Router()
@@ -27,5 +28,6 @@ router.use("/orders", OrderRoutes)
 router.use("/offers", OfferRoutes)
 router.use("/payments", PaymentRoutes);
 router.use("/invoices", InvoiceRoutes);
+router.use("/audit-logs", AuditLogRoutes)
 
 export const IndexRoutes = router
