@@ -1,7 +1,6 @@
-import {
-  IPriceSource,
-} from "../price-estimation.interface";
+import axios from "axios";
 
+import { IPriceSource } from "../price-estimation.interface";
 
 interface GoogleShoppingResult {
   title?: string;
@@ -11,165 +10,132 @@ interface GoogleShoppingResult {
   source?: string;
 }
 
+interface SerpApiResponse {
+  shopping_results?: GoogleShoppingResult[];
+  error?: string;
+}
 
-export const searchGoogleShopping =
-  async (
-    searchQuery: string
-  ): Promise<IPriceSource[]> => {
+export const searchGoogleShopping = async (
+  searchQuery: string
+): Promise<IPriceSource[]> => {
+  const apiKey = process.env.SERPAPI_KEY;
 
-    const apiKey =
-      process.env.SERPAPI_KEY;
+  if (!apiKey) {
+    console.error("❌ SERPAPI_KEY is not configured");
+    return [];
+  }
 
-    if (!apiKey) {
-      throw new Error(
-        "SERPAPI_KEY is not configured"
-      );
-    }
+  try {
+    console.log(
+      `🔎 Searching Google Shopping for: ${searchQuery}`
+    );
 
-
-    try {
-
-      const url =
-        new URL(
-          "https://serpapi.com/search.json"
-        );
-
-
-      url.searchParams.set(
-        "engine",
-        "google_shopping"
-      );
-
-      url.searchParams.set(
-        "q",
-        searchQuery
-      );
-
-      url.searchParams.set(
-        "location",
-        "Ahmedabad, Gujarat, India"
-      );
-
-      url.searchParams.set(
-        "gl",
-        "in"
-      );
-
-      url.searchParams.set(
-        "hl",
-        "en"
-      );
-
-      url.searchParams.set(
-        "api_key",
-        apiKey
-      );
-
-
-      const response =
-        await fetch(
-          url.toString()
-        );
-
-
-      if (!response.ok) {
-
-        const errorText =
-          await response.text();
-
-        console.error(
-          "SerpAPI HTTP error:",
-          errorText
-        );
-
-        return [];
+    const response = await axios.get<SerpApiResponse>(
+      "https://serpapi.com/search.json",
+      {
+        params: {
+          engine: "google_shopping",
+          q: searchQuery,
+          location: "Ahmedabad, Gujarat, India",
+          gl: "in",
+          hl: "en",
+          api_key: apiKey,
+        },
+        timeout: 30000,
       }
+    );
 
+    const data = response.data;
 
-      const data =
-        await response.json() as {
-          shopping_results?: GoogleShoppingResult[];
-          error?: string;
-        };
-
-
-      if (data.error) {
-
-        console.error(
-          "SerpAPI error:",
-          data.error
-        );
-
-        return [];
-      }
-
-
-      if (
-        !data.shopping_results ||
-        data.shopping_results.length === 0
-      ) {
-
-        console.log(
-          "No Google Shopping results found"
-        );
-
-        return [];
-      }
-
-
-      const results:
-        (IPriceSource | null)[] =
-        data.shopping_results.map(
-          (
-            item: GoogleShoppingResult
-          ): IPriceSource | null => {
-
-            const price =
-              Number(
-                item.extracted_price
-              );
-
-
-            if (
-              !Number.isFinite(price) ||
-              price <= 0
-            ) {
-              return null;
-            }
-
-
-            return {
-              sourceName:
-                item.source ||
-                "Google Shopping",
-
-              productName:
-                item.title,
-
-              price,
-
-              sourceUrl:
-                item.product_link,
-            };
-          }
-        );
-
-
-      return results.filter(
-        (
-          item: IPriceSource | null
-        ): item is IPriceSource =>
-          item !== null
-      );
-
-
-    } catch (error) {
-
+   
+    if (data.error) {
       console.error(
-        "Google Shopping adapter error:",
-        error
+        "❌ SerpAPI error:",
+        data.error
       );
 
       return [];
     }
-  };
+
+  
+    if (
+      !data.shopping_results ||
+      data.shopping_results.length === 0
+    ) {
+      console.log(
+        "⚠️ No Google Shopping results found"
+      );
+
+      return [];
+    }
+
+    console.log(
+      `✅ Google Shopping returned ${data.shopping_results.length} results`
+    );
+
+    const results: IPriceSource[] = [];
+
+    for (const item of data.shopping_results) {
+      const price = Number(item.extracted_price);
+
+     
+      if (!Number.isFinite(price) || price <= 0) {
+        continue;
+      }
+
+      results.push({
+        sourceName:
+          item.source || "Google Shopping",
+
+        productName:
+          item.title || searchQuery,
+
+        price,
+
+        sourceUrl:
+          item.product_link,
+      });
+    }
+
+    console.log(
+      `💰 Valid Google Shopping prices: ${results.length}`
+    );
+
+    console.log(
+      "💰 Price results:",
+      results
+    );
+
+    return results;
+
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error(
+        "❌ Google Shopping Axios Error:",
+        error.message
+      );
+
+      console.error(
+        "Status:",
+        error.response?.status
+      );
+
+      console.error(
+        "Response:",
+        error.response?.data
+      );
+
+      console.error(
+        "Code:",
+        error.code
+      );
+    } else {
+      console.error(
+        "❌ Google Shopping Error:",
+        error
+      );
+    }
+
+    return [];
+  }
+};
