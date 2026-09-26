@@ -28,7 +28,7 @@ const analyzeProductImage = catchAsync(
       });
     }
 
-    // CloudinaryStorage থেকে image URL
+    
     const imageUrl = req.file.path;
 
     if (!imageUrl) {
