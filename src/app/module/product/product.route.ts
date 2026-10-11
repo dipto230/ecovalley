@@ -21,6 +21,11 @@ const router = Router();
 
 router.get(
   "/",
+  checkAuth(
+    Role.VENDOR,
+    Role.ADMIN,
+    Role.SUPER_ADMIN
+  ),
   ProductController.getAllProducts
 );
 
@@ -28,6 +33,11 @@ router.get(
 
 router.get(
   "/vendor/:vendorId",
+  checkAuth(
+    Role.VENDOR,
+    Role.ADMIN,
+    Role.SUPER_ADMIN
+  ),
   ProductController.getProductsByVendor
 );
 
@@ -35,6 +45,11 @@ router.get(
 
 router.get(
   "/category/:categoryId",
+  checkAuth(
+    Role.VENDOR,
+    Role.ADMIN,
+    Role.SUPER_ADMIN
+  ),
   ProductController.getProductsByCategory
 );
 
@@ -42,6 +57,11 @@ router.get(
 
 router.get(
   "/status/:status",
+  checkAuth(
+    Role.VENDOR,
+    Role.ADMIN,
+    Role.SUPER_ADMIN
+  ),
   ProductController.getProductsByStatus
 );
 
@@ -49,6 +69,11 @@ router.get(
 
 router.get(
   "/:id",
+  checkAuth(
+    Role.VENDOR,
+    Role.ADMIN,
+    Role.SUPER_ADMIN
+  ),
   ProductController.getSingleProduct
 );
 
