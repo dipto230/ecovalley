@@ -1,0 +1,25 @@
+model ImagePriceEstimate {
+  id                  String            @id @default(uuid())
+  imageUrl            String
+
+  detectedCategory    String?
+  detectedBrand       String?
+  detectedModel       String?
+  condition           ProductCondition?
+  detectionConfidence Float
+  aiModel             String
+
+  aiPredictedPrice    Decimal?          @db.Decimal(10, 2)
+  averagePrice        Decimal?          @db.Decimal(10, 2)
+  lowestPrice         Decimal?          @db.Decimal(10, 2)
+  highestPrice        Decimal?          @db.Decimal(10, 2)
+  confidenceScore     Float?
+
+  sources             ImagePriceSource[]
+
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+
+  @@index([createdAt])
+  @@map("image_price_estimates")
+}

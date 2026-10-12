@@ -49,7 +49,36 @@ const estimateProductPrice =
     }
   );
 
+  const estimateImagePrice = catchAsync(
+  async (req: Request, res: Response) => {
+    if (!req.file) {
+      return sendResponse(res, {
+        httpStatusCode: status.BAD_REQUEST,
+        success: false,
+        message: "Please upload a product image",
+        data: null,
+      });
+    }
+
+    const imageUrl = req.file.path;
+
+    const result =
+      await PriceEstimationService.estimateImagePrice(
+        imageUrl
+      );
+
+    sendResponse(res, {
+      httpStatusCode: status.OK,
+      success: true,
+      message: "Image price estimated successfully",
+      data: result,
+    });
+  }
+);
+
+
 
 export const PriceEstimationController = {
   estimateProductPrice,
+  estimateImagePrice,
 };

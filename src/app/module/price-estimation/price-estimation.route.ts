@@ -13,6 +13,7 @@ import {
 import {
   Role,
 } from "../../../generated/prisma/enums";
+import { multerUpload } from "../../../config/multer.config";
 
 // import {
 //   validateRequest,
@@ -25,16 +26,22 @@ import {
 
 const router = Router();
 
+router.post(
+  "/image",
+  multerUpload.single("image"),
+  PriceEstimationController.estimateImagePrice
+);
+
 
 router.get(
   "/:productId",
 
-  checkAuth(
-    Role.CUSTOMER,
-    Role.VENDOR,
-    Role.ADMIN,
-    Role.SUPER_ADMIN
-  ),
+  // checkAuth(
+  //   Role.CUSTOMER,
+  //   Role.VENDOR,
+  //   Role.ADMIN,
+  //   Role.SUPER_ADMIN
+  // ),
 
 //   validateRequest(
 //     priceEstimationParamsSchema

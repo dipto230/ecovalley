@@ -43,13 +43,19 @@ router.post(
 router.get(
   "/order/:orderId",
 
-  checkAuth("CUSTOMER"),
+  checkAuth("CUSTOMER", "ADMIN", "SUPER_ADMIN"),
 
   validateRequest(
     paymentOrderIdSchema
   ),
 
   PaymentController.getPaymentsByOrder
+);
+
+router.get(
+  "/",
+  checkAuth("ADMIN", "SUPER_ADMIN"),
+  PaymentController.getAllPayments,
 );
 
 

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import status from "http-status";
 import Stripe from "stripe";
 
@@ -401,6 +402,47 @@ const handleCheckoutCompleted = async (
 };
 
 
+const getAllPayments = async (
+  page = 1,
+  limit = 10,
+  paymentStatus?: string,
+) => {
+  const where = paymentStatus
+    ? { status: paymentStatus as any }
+    : {};
+
+  const [payments, total] = await prisma.$transaction([
+    prisma.payment.findMany({
+      where,
+      include: {
+        order: {
+          include: {
+            customer: true,
+            vendor: true,
+          },
+        },
+      },
+      orderBy: {
+        paidAt: "desc",
+      },
+      skip: (page - 1) * limit,
+      take: limit,
+    }),
+    prisma.payment.count({ where }),
+  ]);
+
+  return {
+    data: payments,
+    meta: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
+};
+
+
 
 
 const getPaymentsByOrder = async (
@@ -461,4 +503,5 @@ export const PaymentService = {
   createCheckoutSession,
   handleStripeWebhook,
   getPaymentsByOrder,
+  getAllPayments
 };

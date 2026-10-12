@@ -1,0 +1,15 @@
+model ImagePriceSource {
+  id                  String            @id @default(uuid())
+  imagePriceEstimateId String
+
+  sourceName          String
+  productName         String?
+  price               Decimal           @db.Decimal(10, 2)
+  sourceUrl           String?
+  scrapedAt           DateTime          @default(now())
+
+estimate ImagePriceEstimate @relation(fields: [imagePriceEstimateId], references: [id], onDelete: Cascade)
+
+  @@index([imagePriceEstimateId])
+  @@map("image_price_sources")
+}

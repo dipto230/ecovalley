@@ -73,9 +73,42 @@ const getPaymentsByOrder = async (
   });
 };
 
+const getAllPayments = async (
+  req: Request,
+  res: Response,
+) => {
+  const page = Math.max(
+    1,
+    Number(req.query.page) || 1,
+  );
+
+  const limit = Math.min(
+    100,
+    Math.max(1, Number(req.query.limit) || 10),
+  );
+
+  const paymentStatus =
+    typeof req.query.status === "string"
+      ? req.query.status
+      : undefined;
+
+  const result = await PaymentService.getAllPayments(
+    page,
+    limit,
+    paymentStatus,
+  );
+
+  res.status(status.OK).json({
+    success: true,
+    message: "Payments retrieved successfully",
+    ...result,
+  });
+};
+
 
 export const PaymentController = {
   createCheckoutSession,
   stripeWebhook,
   getPaymentsByOrder,
+  getAllPayments,
 };
