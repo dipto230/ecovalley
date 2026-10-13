@@ -1,0 +1,26 @@
+model EWasteRecoveryMaterial {
+  id                     String   @id @default(uuid())
+  reportId               String
+
+  materialName           String
+  estimatedWeightMinGrams Float?
+  estimatedWeightMaxGrams Float?
+  recoveryRate            Float?
+
+  recoveredWeightMinGrams Float?
+  recoveredWeightMaxGrams Float?
+
+  pricePerKg              Decimal? @db.Decimal(10, 2)
+  estimatedValueMin       Decimal? @db.Decimal(10, 2)
+  estimatedValueMax       Decimal? @db.Decimal(10, 2)
+
+  confidenceScore         Float?
+  notes                   String?
+
+ report EWasteRecoveryReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([reportId])
+  @@map("ewaste_recovery_materials")
+}

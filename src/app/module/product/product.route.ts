@@ -24,7 +24,8 @@ router.get(
   checkAuth(
     Role.VENDOR,
     Role.ADMIN,
-    Role.SUPER_ADMIN
+    Role.SUPER_ADMIN,
+    Role.CUSTOMER
   ),
   ProductController.getAllProducts
 );
@@ -36,7 +37,8 @@ router.get(
   checkAuth(
     Role.VENDOR,
     Role.ADMIN,
-    Role.SUPER_ADMIN
+    Role.SUPER_ADMIN,
+    Role.CUSTOMER
   ),
   ProductController.getProductsByVendor
 );
@@ -48,7 +50,8 @@ router.get(
   checkAuth(
     Role.VENDOR,
     Role.ADMIN,
-    Role.SUPER_ADMIN
+    Role.SUPER_ADMIN,
+    Role.CUSTOMER
   ),
   ProductController.getProductsByCategory
 );
@@ -60,7 +63,8 @@ router.get(
   checkAuth(
     Role.VENDOR,
     Role.ADMIN,
-    Role.SUPER_ADMIN
+    Role.SUPER_ADMIN,
+    Role.CUSTOMER
   ),
   ProductController.getProductsByStatus
 );
@@ -72,7 +76,8 @@ router.get(
   checkAuth(
     Role.VENDOR,
     Role.ADMIN,
-    Role.SUPER_ADMIN
+    Role.SUPER_ADMIN,
+    Role.CUSTOMER
   ),
   ProductController.getSingleProduct
 );

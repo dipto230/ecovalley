@@ -14,6 +14,7 @@ import { InvoiceRoutes } from "../module/invoice/invoice.route";
 import { AuditLogRoutes } from "../module/auditLog/auditLog.route";
 import { AIDetectionRoutes } from "../module/ai-detection/ai-detection.route";
 import { StatsRoutes } from "../module/stats/stats.route";
+import { MarketRoutes } from "../module/market/market.route";
 
 
 const router = Router()
@@ -33,5 +34,6 @@ router.use("/invoices", InvoiceRoutes);
 router.use("/audit-logs", AuditLogRoutes)
 router.use("/ai-detection", AIDetectionRoutes);
 router.use("/stats", StatsRoutes);
+router.use("/market", MarketRoutes);
 
 export const IndexRoutes = router

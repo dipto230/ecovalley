@@ -16,6 +16,7 @@ model ImagePriceEstimate {
   confidenceScore     Float?
 
   sources             ImagePriceSource[]
+  recoveryReport      EWasteRecoveryReport?
 
   createdAt           DateTime          @default(now())
   updatedAt           DateTime          @updatedAt

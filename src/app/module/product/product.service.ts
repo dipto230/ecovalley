@@ -157,61 +157,31 @@ const createProduct = async (
 
 
 
-const getAllProducts = async (
-  query: IQueryParams
-) => {
 
+const getAllProducts = async (query: IQueryParams) => {
   const queryBuilder = new QueryBuilder<
     Product,
     Prisma.ProductWhereInput,
     Prisma.ProductInclude
-  >(
-    prisma.product,
-    query,
-    {
-      searchableFields:
-        productSearchableFields,
+  >(prisma.product, query, {
+    searchableFields: productSearchableFields,
+    filterableFields: productFilterableFields,
+  });
 
-      filterableFields:
-        productFilterableFields,
-    }
-  );
-
-
-  const result = await queryBuilder
-
+  return await queryBuilder
     .search()
-
     .filter()
-
-    .where({
-      vendor: {
-        isDeleted: false,
-      },
-    })
-
+    .where({})
     .dynamicInclude(
-      productIncludeConfig as Record<
-        string,
-        unknown
-      >,
-      [
-        "vendor",
-        "category",
-      ]
+      productIncludeConfig as Record<string, unknown>,
+      ["vendor", "category", "productImages"]
     )
-
     .paginate()
-
     .sort()
-
     .fields()
-
     .execute();
-
-
-  return result;
 };
+
 
 
 
