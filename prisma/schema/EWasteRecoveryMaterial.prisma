@@ -1,8 +1,8 @@
 model EWasteRecoveryMaterial {
-  id                     String   @id @default(uuid())
-  reportId               String
+  id       String @id @default(uuid())
+  reportId String
 
-  materialName           String
+  materialName            String
   estimatedWeightMinGrams Float?
   estimatedWeightMaxGrams Float?
   recoveryRate            Float?
@@ -10,14 +10,14 @@ model EWasteRecoveryMaterial {
   recoveredWeightMinGrams Float?
   recoveredWeightMaxGrams Float?
 
-  pricePerKg              Decimal? @db.Decimal(10, 2)
-  estimatedValueMin       Decimal? @db.Decimal(10, 2)
-  estimatedValueMax       Decimal? @db.Decimal(10, 2)
+  pricePerKg        Decimal? @db.Decimal(10, 2)
+  estimatedValueMin Decimal? @db.Decimal(10, 2)
+  estimatedValueMax Decimal? @db.Decimal(10, 2)
 
-  confidenceScore         Float?
-  notes                   String?
+  confidenceScore Float?
+  notes           String?
 
- report EWasteRecoveryReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  report EWasteRecoveryReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
 

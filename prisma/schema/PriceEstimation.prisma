@@ -1,18 +1,18 @@
 model PriceEstimation {
-  id               String   @id @default(uuid())
-  productId        String
+  id        String @id @default(uuid())
+  productId String
 
-  aiPredictedPrice Decimal  @db.Decimal(10,2)
-  averagePrice     Decimal  @db.Decimal(10,2)
-  lowestPrice      Decimal  @db.Decimal(10,2)
-  highestPrice     Decimal  @db.Decimal(10,2)
+  aiPredictedPrice Decimal @db.Decimal(10, 2)
+  averagePrice     Decimal @db.Decimal(10, 2)
+  lowestPrice      Decimal @db.Decimal(10, 2)
+  highestPrice     Decimal @db.Decimal(10, 2)
 
-  confidenceScore  Float?
+  confidenceScore Float?
 
-  sources          PriceSource[]
+  sources PriceSource[]
 
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
@@ -20,18 +20,17 @@ model PriceEstimation {
   @@map("price_estimations")
 }
 
-
 model PriceSource {
-  id                String   @id @default(uuid())
+  id                String @id @default(uuid())
   priceEstimationId String
 
-  sourceName        String
-  productName       String?
-  price             Decimal  @db.Decimal(10,2)
-  sourceUrl         String?
-  scrapedAt         DateTime @default(now())
+  sourceName  String
+  productName String?
+  price       Decimal  @db.Decimal(10, 2)
+  sourceUrl   String?
+  scrapedAt   DateTime @default(now())
 
- priceEstimation PriceEstimation @relation(fields: [priceEstimationId], references: [id], onDelete: Cascade)
+  priceEstimation PriceEstimation @relation(fields: [priceEstimationId], references: [id], onDelete: Cascade)
 
   @@index([priceEstimationId])
   @@map("price_sources")

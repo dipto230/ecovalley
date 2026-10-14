@@ -155,6 +155,24 @@ const cancelOrder = async (
 };
 
 
+const buyNow = async (
+  req: Request,
+  res: Response
+) => {
+  const result = await OrderService.buyNow(
+    req.user.userId,
+    req.body.productId
+  );
+
+  res.status(status.CREATED).json({
+    success: true,
+    message: "Buy Now order created successfully",
+    data: result,
+  });
+};
+
+
+
 export const OrderController = {
   createOrder,
   getOrderById,
@@ -163,4 +181,5 @@ export const OrderController = {
   getVendorOrders,
   updateOrderStatus,
   cancelOrder,
+  buyNow
 };

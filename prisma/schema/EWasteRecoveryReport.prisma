@@ -1,33 +1,33 @@
 model EWasteRecoveryReport {
-  id                       String   @id @default(uuid())
-  imagePriceEstimateId     String   @unique
+  id                   String @id @default(uuid())
+  imagePriceEstimateId String @unique
 
-  deviceCategory           String?
-  deviceBrand              String?
-  deviceModel              String?
+  deviceCategory String?
+  deviceBrand    String?
+  deviceModel    String?
 
-  estimatedWeightMinGrams  Float?
-  estimatedWeightMaxGrams  Float?
+  estimatedWeightMinGrams Float?
+  estimatedWeightMaxGrams Float?
 
-  estimatedGrossValueMin   Decimal? @db.Decimal(10, 2)
-  estimatedGrossValueMax   Decimal? @db.Decimal(10, 2)
+  estimatedGrossValueMin Decimal? @db.Decimal(10, 2)
+  estimatedGrossValueMax Decimal? @db.Decimal(10, 2)
 
-  processingCostMin        Decimal? @db.Decimal(10, 2)
-  processingCostMax        Decimal? @db.Decimal(10, 2)
+  processingCostMin Decimal? @db.Decimal(10, 2)
+  processingCostMax Decimal? @db.Decimal(10, 2)
 
-  estimatedNetValueMin     Decimal? @db.Decimal(10, 2)
-  estimatedNetValueMax     Decimal? @db.Decimal(10, 2)
+  estimatedNetValueMin Decimal? @db.Decimal(10, 2)
+  estimatedNetValueMax Decimal? @db.Decimal(10, 2)
 
-  currency                 String   @default("INR")
-  recommendation           String?
-  recommendationReason     String?
-  assumptions              String?
-  confidenceScore          Float
-  aiModel                  String
+  currency             String  @default("INR")
+  recommendation       String?
+  recommendationReason String?
+  assumptions          String?
+  confidenceScore      Float
+  aiModel              String
 
-  materials                EWasteRecoveryMaterial[]
+  materials EWasteRecoveryMaterial[]
 
- imagePriceEstimate ImagePriceEstimate @relation(fields: [imagePriceEstimateId], references: [id], onDelete: Cascade)
+  imagePriceEstimate ImagePriceEstimate @relation(fields: [imagePriceEstimateId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

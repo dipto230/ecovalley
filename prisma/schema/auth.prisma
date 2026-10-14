@@ -1,25 +1,22 @@
-
-
-
 model User {
-  id            String    @id
-  name          String
-  email         String
-  emailVerified Boolean   @default(false)
-  role          Role      @default(CUSTOMER)
-  status        UserStatus @default(ACTIVE)
-  needPasswordChange Boolean   @default(false)
-  isDeleted     Boolean   @default(false)
-  deletedAt     DateTime?
-  image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  sessions      Session[]
-  accounts      Account[]
-  
-  customer          Customer ?
-  admin              Admin?
-  vendor            Vendors ?
+  id                 String     @id
+  name               String
+  email              String
+  emailVerified      Boolean    @default(false)
+  role               Role       @default(CUSTOMER)
+  status             UserStatus @default(ACTIVE)
+  needPasswordChange Boolean    @default(false)
+  isDeleted          Boolean    @default(false)
+  deletedAt          DateTime?
+  image              String?
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+  sessions           Session[]
+  accounts           Account[]
+
+  customer Customer?
+  admin    Admin?
+  vendor   Vendors?
 
   @@unique([email])
   @@map("user")

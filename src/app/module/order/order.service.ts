@@ -4,10 +4,12 @@ import {
   OfferStatus,
   OrderStatus,
   ProductStatus,
+  VendorStatus,
 } from "../../../generated/prisma/client";
 
 import AppError from "../../errorHelpers/AppError";
 import { prisma } from "../../lib/prisma";
+import httpStatus from "http-status";
 
 import {
   ICreateOrder,
@@ -18,6 +20,7 @@ import {
   ORDER_SORT_FIELDS,
   ORDER_STATUS_TRANSITIONS,
 } from "./order.constant";
+
 
 
 
@@ -122,6 +125,9 @@ const createOrder = async (
       "Product is out of stock"
     );
   }
+
+
+
 
  
   const order = await prisma.$transaction(
@@ -512,6 +518,90 @@ const cancelOrder = async (
 };
 
 
+
+
+export const buyNow = async (userId: string, productId: string) => {
+  // 1. Verify customer
+  const customer = await prisma.customer.findUnique({
+    where: { userId },
+  });
+
+  if (!customer || customer.deletedAt) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      "Customer not found",
+    );
+  }
+
+  // 2. Get product and vendor from database
+  const product = await prisma.product.findUnique({
+    where: { id: productId },
+    include: {
+      vendor: true,
+    },
+  });
+
+  if (!product) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      "Product not found",
+    );
+  }
+
+  if (product.status !== ProductStatus.AVAILABLE) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "This product is not available for purchase",
+    );
+  }
+
+  if (product.quantity <= 0) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "This product is out of stock",
+    );
+  }
+
+ if (
+  product.vendor.deletedAt ||
+  product.vendor.status !== VendorStatus.ACTIVE
+) {
+  throw new AppError(
+    400,
+    "This vendor is not available",
+  );
+}
+
+  // 3. Create an accepted offer at the listed price
+  const offer = await prisma.offer.create({
+    data: {
+      productId: product.id,
+      vendorId: product.vendorId,
+      offerPrice: product.estimatedPrice,
+      message: "Buy Now - purchase at listed price",
+      status: OfferStatus.ACCEPTED,
+    },
+  });
+
+  // 4. Reuse the existing order creation logic
+  try {
+    return await createOrder(userId, {
+      offerId: offer.id,
+    });
+  } catch (error) {
+    // Clean up the offer if order creation fails
+    await prisma.offer
+      .delete({
+        where: { id: offer.id },
+      })
+      .catch(() => undefined);
+
+    throw error;
+  }
+};
+
+
+
 export const OrderService = {
   createOrder,
   getOrderById,
@@ -520,4 +610,5 @@ export const OrderService = {
   getVendorOrders,
   updateOrderStatus,
   cancelOrder,
+  buyNow
 };

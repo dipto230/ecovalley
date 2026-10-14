@@ -1,13 +1,13 @@
 model MarketComparison {
-  id           String   @id @default(uuid())
+  id String @id @default(uuid())
 
-  productId    String
+  productId String
 
   platformName String
   productUrl   String
-  marketPrice  Decimal @db.Decimal(10,2)
+  marketPrice  Decimal @db.Decimal(10, 2)
 
-  createdAt    DateTime @default(now())
+  createdAt DateTime @default(now())
 
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 

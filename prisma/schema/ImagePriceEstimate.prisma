@@ -1,6 +1,6 @@
 model ImagePriceEstimate {
-  id                  String            @id @default(uuid())
-  imageUrl            String
+  id       String @id @default(uuid())
+  imageUrl String
 
   detectedCategory    String?
   detectedBrand       String?
@@ -9,17 +9,17 @@ model ImagePriceEstimate {
   detectionConfidence Float
   aiModel             String
 
-  aiPredictedPrice    Decimal?          @db.Decimal(10, 2)
-  averagePrice        Decimal?          @db.Decimal(10, 2)
-  lowestPrice         Decimal?          @db.Decimal(10, 2)
-  highestPrice        Decimal?          @db.Decimal(10, 2)
-  confidenceScore     Float?
+  aiPredictedPrice Decimal? @db.Decimal(10, 2)
+  averagePrice     Decimal? @db.Decimal(10, 2)
+  lowestPrice      Decimal? @db.Decimal(10, 2)
+  highestPrice     Decimal? @db.Decimal(10, 2)
+  confidenceScore  Float?
 
-  sources             ImagePriceSource[]
-  recoveryReport      EWasteRecoveryReport?
+  sources        ImagePriceSource[]
+  recoveryReport EWasteRecoveryReport?
 
-  createdAt           DateTime          @default(now())
-  updatedAt           DateTime          @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([createdAt])
   @@map("image_price_estimates")

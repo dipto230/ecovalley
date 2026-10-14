@@ -9,6 +9,7 @@ import {
   updateOrderStatusSchema,
   cancelOrderSchema,
   orderIdSchema,
+  buyNowSchema,
 } from "./order.validation";
 import { validateRequest } from "../../middleware/validationRequest";
 
@@ -107,6 +108,13 @@ router.patch(
   validateRequest(cancelOrderSchema),
 
   OrderController.cancelOrder
+);
+
+router.post(
+  "/buy-now",
+  checkAuth("CUSTOMER"),
+  validateRequest(buyNowSchema),
+  OrderController.buyNow
 );
 
 

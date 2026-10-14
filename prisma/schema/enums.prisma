@@ -1,15 +1,14 @@
 enum Role {
-    
- CUSTOMER
-    ADMIN
-    SUPER_ADMIN
-    VENDOR
+  CUSTOMER
+  ADMIN
+  SUPER_ADMIN
+  VENDOR
 }
 
 enum UserStatus {
-    BLOCKED
-    DELETED
-    ACTIVE
+  BLOCKED
+  DELETED
+  ACTIVE
 }
 
 enum VendorStatus {
@@ -18,7 +17,6 @@ enum VendorStatus {
   INACTIVE
   SUSPENDED
 }
-
 
 enum ProductCondition {
   NEW
@@ -40,6 +38,7 @@ enum OfferStatus {
   REJECTED
   CANCELLED
 }
+
 enum OrderStatus {
   PENDING
   CONFIRMED

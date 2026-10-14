@@ -28,3 +28,6 @@ export const cancelOrderSchema = z.object({});
 
 // Order ID
 export const orderIdSchema = z.object({});
+export const buyNowSchema = z.object({
+  productId: z.string().uuid("Invalid product ID"),
+});

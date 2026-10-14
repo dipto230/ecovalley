@@ -1,18 +1,18 @@
 model AIDetection {
-  id               String   @id @default(uuid())
+  id String @id @default(uuid())
 
-  productId        String
+  productId String
 
   detectedCategory String?
   detectedBrand    String?
   detectedModel    String?
 
-  condition        ProductCondition?
+  condition ProductCondition?
 
-  confidenceScore  Float
+  confidenceScore Float
 
-  aiModel          String
-  createdAt        DateTime @default(now())
+  aiModel   String
+  createdAt DateTime @default(now())
 
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 

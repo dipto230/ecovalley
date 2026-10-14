@@ -14,6 +14,5 @@ model Review {
   @@index([orderId])
   @@index([customerId])
   @@index([vendorId])
-
   @@map("reviews")
 }
